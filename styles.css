@@ -1,0 +1,41 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: #1DB954;
+    padding: 60px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+    width: 80%; /* Takes up 80% of the viewport width */
+    max-width: 500px; /* Max width for the container */
+    text-align: center;
+}
+
+.spotify-logo img {
+    width: 120px;
+    margin-bottom: 40px; /* Increased margin for better spacing */
+}
+
+button#loginWithSpotify {
+    padding: 15px 30px;
+    font-size: 18px; /* Larger font size for the button */
+    margin-top: 30px; /* Increased top margin */
+    background-color: #121212;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: none;
+    border-radius: 5px;
+    width: 100%; /* Button takes up full width of the container */
+}
+
+button#loginWithSpotify:hover {
+    background-color: #000;
+}
