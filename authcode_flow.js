@@ -23,7 +23,7 @@ const hashed = await sha256(codeVerifier)
 const codeChallenge = base64encode(hashed);
 
 const clientId = 'b5a00bbb23724ed3ab30250d5f01fc71';
-const redirectUri = encodeURIComponent('https://cwm00004.github.io/simple-analytics/Dashboard.html');
+const redirectUri = 'https://cwm00004.github.io/simple-analytics/Dashboard.html';
 
 const scope = 'user-read-private user-read-email';
 const authUrl = new URL("https://accounts.spotify.com/authorize")
