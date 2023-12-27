@@ -1,50 +1,42 @@
-const generateRandomString = (length) => {
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const values = crypto.getRandomValues(new Uint8Array(length));
-    return values.reduce((acc, x) => acc + possible[x % possible.length], "");
-  }
-  
-  const codeVerifier  = generateRandomString(64);
+// Attach event listener to the "Login with Spotify" button
+const loginButton = document.getElementById('spotifyLoginButton');
 
-  const sha256 = async (plain) => {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(plain)
-    return window.crypto.subtle.digest('SHA-256', data)
-  }
+loginButton.addEventListener('click', async function() {
+    // 1. Generate codeVerifier and its hashed value
+    const codeVerifier = generateRandomString(64);
+    const hashed = await sha256(codeVerifier);
+    const codeChallenge = base64encode(hashed);
 
-  const base64encode = (input) => {
-    return btoa(String.fromCharCode(...new Uint8Array(input)))
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-  }
+    // Store the codeVerifier for later use (in real-world scenarios, you might consider more secure storage methods)
+    localStorage.setItem('code_verifier', codeVerifier);
 
-const hashed = await sha256(codeVerifier)
-const codeChallenge = base64encode(hashed);
+    // 2. Redirect the user to Spotify for authorization
+    const clientId = 'b5a00bbb23724ed3ab30250d5f01fc71';
+    const redirectUri = 'https://cwm00004.github.io/simple-analytics/Dashboard.html';
+    const scope = 'user-read-private user-read-email';
+    const authUrl = new URL("https://accounts.spotify.com/authorize");
 
-const clientId = 'b5a00bbb23724ed3ab30250d5f01fc71';
-const redirectUri = 'https://cwm00004.github.io/simple-analytics/Dashboard.html';
+    const params = {
+        response_type: 'code',
+        client_id: clientId,
+        scope,
+        code_challenge_method: 'S256',
+        code_challenge: codeChallenge,
+        redirect_uri: redirectUri,
+    };
 
-const scope = 'user-read-private user-read-email';
-const authUrl = new URL("https://accounts.spotify.com/authorize")
+    authUrl.search = new URLSearchParams(params).toString();
+    window.location.href = authUrl.toString();
+});
 
-// generated in the previous step
-window.localStorage.setItem('code_verifier', codeVerifier);
-
-const params =  {
-  response_type: 'code',
-  client_id: clientId,
-  scope,
-  code_challenge_method: 'S256',
-  code_challenge: codeChallenge,
-  redirect_uri: redirectUri,
-}
-
-authUrl.search = new URLSearchParams(params).toString();
-window.location.href = authUrl.toString();
-
+// When the user is redirected back to your application after granting permissions
 const urlParams = new URLSearchParams(window.location.search);
-let code = urlParams.get('code');
+const code = urlParams.get('code');
+
+if (code) {
+    // 3. Exchange the authorization code for an access token
+    await getToken(code);
+}
 
 const getToken = async code => {
 
